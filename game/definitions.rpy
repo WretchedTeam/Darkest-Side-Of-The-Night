@@ -3,14 +3,14 @@
 # This section defines stuff for DDLC and your mod!
 # Use this as a starting point if you would like to override with your own.
 
-## Note: For Android, make sure to change the default package name of to 
-## your own package name in options.rpy under define package_name. 
+## Note: For Android, make sure to change the default package name of to
+## your own package name in options.rpy under define package_name.
 ##Your package name is what you defined in Ren'Py Launcher in the Android section
 
 define persistent.demo = False
 define persistent.steam = ("steamapps" in config.basedir.lower())
 # Change this to True to enable Developer Mode
-define config.developer = False
+define config.developer = True
 
 python early:
     import singleton
@@ -23,7 +23,7 @@ init python:
     config.keymap['clipboard_voicing'] = []
     config.keymap['toggle_skip'] = []
     renpy.music.register_channel("music_poem", mixer="music", tight=True)
-    
+
     # Get's position of Music
     def get_pos(channel='music'):
         pos = renpy.music.get_pos(channel=channel)
@@ -65,7 +65,7 @@ init python:
             except: open(config.basedir + "/characters/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
             try: renpy.file("../characters/sayori.chr")
             except: open(config.basedir + "/characters/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
-    
+
     # Restores Characters if their playthough matches current run.
     def restore_relevant_characters():
         restore_all_characters()
@@ -104,7 +104,7 @@ define audio.t2 = "<loop 4.499>bgm/2.ogg" # Ohayou Sayori! - Sayori Theme
 define audio.t2g = "bgm/2g.ogg"
 define audio.t2g2 = "<from 4.499 loop 4.499>bgm/2.ogg"
 define audio.t2g3 = "<loop 4.492>bgm/2g2.ogg"
-define audio.t3 = "<loop 4.618>bgm/3.ogg" # Main Theme - In Game 
+define audio.t3 = "<loop 4.618>bgm/3.ogg" # Main Theme - In Game
 define audio.t3g = "<to 15.255>bgm/3g.ogg"
 define audio.t3g2 = "<from 15.255 loop 4.618>bgm/3.ogg"
 define audio.t3g3 = "<loop 4.618>bgm/3g2.ogg"
@@ -1369,7 +1369,7 @@ define _dismiss_pause = config.developer
 
 # These variables are load at game startup and exist on all saves.
 ## To make a new persistent variable, do so like this
-# default persistent.monika = X 
+# default persistent.monika = X
 # X is either true/false, a number, array (see persistent.clear for arrays) or string based off your choosing
 default persistent.playername = ""
 default player = persistent.playername
@@ -1468,4 +1468,3 @@ default sayori_confess = True
 
 # We read Natsuki's third poem in Chapter 23
 default natsuki_23 = None
-
