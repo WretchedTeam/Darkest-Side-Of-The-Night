@@ -1,0 +1,38 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/splash.rpy", line 7, in script
+    init -100 python:
+  File "game/splash.rpy", line 7, in script
+    init -100 python:
+  File "game/splash.rpy", line 11, in <module>
+    renpy.error("DDLC archive files not found in /game folder. Check your installation and try again.")
+Exception: DDLC archive files not found in /game folder. Check your installation and try again.
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "renpy/bootstrap.py", line 326, in bootstrap
+    renpy.main.main()
+  File "renpy/main.py", line 515, in main
+    renpy.game.context().run(node)
+  File "game/splash.rpy", line 7, in script
+    init -100 python:
+  File "game/splash.rpy", line 7, in script
+    init -100 python:
+  File "renpy/ast.py", line 922, in execute
+    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
+  File "renpy/python.py", line 2218, in py_exec_bytecode
+    exec(bytecode, globals, locals)
+  File "game/splash.rpy", line 11, in <module>
+    renpy.error("DDLC archive files not found in /game folder. Check your installation and try again.")
+  File "renpy/exports.py", line 2494, in error
+    _error_handlers[-1](msg)
+  File "renpy/exports.py", line 2471, in _error
+    raise Exception(msg)
+Exception: DDLC archive files not found in /game folder. Check your installation and try again.
+
+Windows-7-6.1.7601-SP1
+Ren'Py 7.4.4.1439
+DDLC Mod Template 2.4.5
+Sat Jun 19 05:30:56 2021
