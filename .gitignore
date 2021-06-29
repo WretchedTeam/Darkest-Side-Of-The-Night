@@ -1,0 +1,16 @@
+**.rpyc
+**.rpa
+
+lib
+renpy
+
+COPYRIGHT.txt
+DDLC.exe
+DDLC.sh
+DDLC.py
+
+log.txt
+traceback.txt
+errors.txt
+
+README.html
