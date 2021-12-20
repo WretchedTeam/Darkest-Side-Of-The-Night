@@ -27,10 +27,6 @@ label start:
     # Controls whether we have a menu in the textbox or not.
     $ quick_menu = True
 
-    # Controls whether we want normal or glitched dialogue
-    # For glitched dialogue, use 'style.edited' than 'style.normal'
-    $ style.say_dialogue = style.normal
-
     # Controls whether Sayori is dead. Leave this alone unless needed.
     $ in_sayori_kill = None
 

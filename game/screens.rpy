@@ -18,32 +18,9 @@ style default:
     font gui.default_font
     size gui.text_size
     color gui.text_color
-    outlines [(2, "#000000aa", 0, 0)]
+    # outlines [(2, "#000000aa", 0, 0)]
     line_overlap_split 1
     line_spacing 1
-
-style default_monika is normal:
-    slow_cps 30
-
-style edited is default:
-    font "gui/font/VerilySerifMono.otf"
-    kerning 8
-    outlines [(10, "#000", 0, 0)]
-    xpos gui.text_xpos
-    xanchor gui.text_xalign
-    xsize gui.text_width
-    ypos gui.text_ypos
-    text_align gui.text_xalign
-    layout ("subtitle" if gui.text_xalign else "tex")
-
-style normal is default:
-    xpos gui.text_xpos
-    xanchor gui.text_xalign
-    xsize gui.text_width
-    ypos gui.text_ypos
-
-    text_align gui.text_xalign
-    layout ("subtitle" if gui.text_xalign else "tex")
 
 style input:
     color gui.accent_color
@@ -55,8 +32,7 @@ style hyperlink_text:
 
 style splash_text:
     size 24
-    color "#000"
-    font gui.default_font
+    font gui.interface_font
     text_align 0.5
     outlines []
 
@@ -163,7 +139,7 @@ style frame:
 screen say(who, what):
     style_prefix "say"
 
-    window:
+    window at old_tv:
         id "window"
 
         text what id "what"
@@ -229,6 +205,7 @@ style say_dialogue:
 
     text_align gui.text_xalign
     layout ("subtitle" if gui.text_xalign else "tex")
+    outlines [(2, "#000000aa", 0, 0)]
 
 image ctc:
     xalign 0.81 yalign 0.98 xoffset -5 alpha 0.0 subpixel True
@@ -401,6 +378,7 @@ screen quick_menu():
             #textbutton _("Q.Save") action QuickSave()
             #textbutton _("Q.Load") action QuickLoad()
             textbutton _("Settings") action ShowMenu('preferences')
+            textbutton _("Main Menu") action MainMenu()
 
 
 ## This code ensures that the quick_menu screen is displayed in-game, whenever
@@ -438,24 +416,31 @@ init python:
         renpy.hide_screen("name_input")
         renpy.jump_out_of_context("start")
 
+    @renpy.pure
+    class LoadMostRecent(Action):
+        def __init__(self):
+            self.slot = renpy.newest_slot(r"\d+")
+
+        def __call__(self):
+            return renpy.load(self.slot)
+
+        def get_sensitive(self):
+            return self.slot is not None
+
 screen navigation():
 
     vbox:
         style_prefix "navigation"
-
-        xpos gui.navigation_xpos
-        yalign 0.8
+        xalign 0.5
 
         spacing gui.navigation_spacing
 
         if not persistent.autoload or not main_menu:
 
-            if main_menu:
+            textbutton _("CONTINUE") action LoadMostRecent()
 
-                if persistent.playthrough == 1:
-                    textbutton _("ŔŗñĮ¼»ŧþŀÂŻŕěōì«") action If(persistent.playername, true=Start(), false=Show(screen="name_input", message="Please enter your name", ok_action=Function(FinishEnterName)))
-                else:
-                    textbutton _("New Game") action If(persistent.playername, true=Start(), false=Show(screen="name_input", message="Please enter your name", ok_action=Function(FinishEnterName)))
+            if main_menu:
+                textbutton _("NEW GAME") action If(persistent.playername, true=Start(), false=Show(screen="name_input", message="Please enter your name", ok_action=Function(FinishEnterName)))
 
             else:
 
@@ -463,7 +448,7 @@ screen navigation():
 
                 textbutton _("Save Game") action [ShowMenu("save"), SensitiveIf(renpy.get_screen("save") == None)]
 
-            textbutton _("Load Game") action [ShowMenu("load"), SensitiveIf(renpy.get_screen("load") == None)]
+            textbutton _("LOAD GAME") action [ShowMenu("load"), SensitiveIf(renpy.get_screen("load") == None)]
 
             if _in_replay:
 
@@ -475,17 +460,17 @@ screen navigation():
                 else:
                     textbutton _("Main Menu") action NullAction()
 
-            textbutton _("Settings") action [ShowMenu("preferences"), SensitiveIf(renpy.get_screen("preferences") == None)]
+            textbutton _("SETTINGS") action [ShowMenu("preferences"), SensitiveIf(renpy.get_screen("preferences") == None)]
 
             #textbutton _("About") action ShowMenu("about")
 
             if renpy.variant("pc"):
 
                 ## Help isn't necessary or relevant to mobile devices.
-                textbutton _("Help") action [Help("README.html"), Show(screen="dialog", message="The help file has been opened in your browser.", ok_action=Hide("dialog"))]
+                # textbutton _("Help") action [Help("README.html"), Show(screen="dialog", message="The help file has been opened in your browser.", ok_action=Hide("dialog"))]
 
                 ## The quit button is banned on iOS and unnecessary on Android.
-                textbutton _("Quit") action Quit(confirm=not main_menu)
+                textbutton _("QUIT") action Quit(confirm=not main_menu)
         else:
             timer 1.75 action Start("autoload_yurikill")
 
@@ -498,15 +483,15 @@ style navigation_button:
     properties gui.button_properties("navigation_button")
     hover_sound gui.hover_sound
     activate_sound gui.activate_sound
+    hover_background "#fff"
+    padding (10, 0)
 
 style navigation_button_text:
+    outlines [ ]
     properties gui.button_text_properties("navigation_button")
-    font "gui/font/RifficFree-Bold.ttf"
     color "#fff"
-    outlines [(4, text_outline_color, 0, 0), (2, text_outline_color, 2, 2)]
-    #outlines [(4, "#b59", 0, 0), (2, "#b59", 2, 2)]
-    hover_outlines [(4, "#fac", 0, 0), (2, "#fac", 2, 2)]
-    insensitive_outlines [(4, "#fce", 0, 0), (2, "#fce", 2, 2)]
+    size 30
+    hover_color "#0000ff"
 
 
 ## Main Menu screen ############################################################
@@ -522,47 +507,63 @@ screen main_menu():
 
     style_prefix "main_menu"
 
-    if persistent.ghost_menu:
-        add "white"
-        add "menu_art_y_ghost"
-        add "menu_art_n_ghost"
-    else:
-        add "menu_bg"
-        add "menu_art_y"
-        add "menu_art_n"
-        frame:
-            pass
+    fixed at old_tv:
+        add gui.main_menu_background
 
-        ## The use statement includes another screen inside this one. The actual
-        ## contents of the main menu are in the navigation screen.
-        use navigation
+        label _("D S O T N") xalign 0.5 yalign 0.2:
+            padding (20, 20)
+            text_color "#0000ff"
+            background "#fff"
+            text_size 72
 
-    if not persistent.ghost_menu:
-        add "menu_particles"
-        add "menu_particles"
-        add "menu_particles"
-        add "menu_logo"
-    if persistent.ghost_menu:
-        add "menu_art_s_ghost"
-        add "menu_art_m_ghost"
-    else:
-        if persistent.playthrough == 1 or persistent.playthrough == 2:
-            add "menu_art_s_glitch"
-        else:
-            add "menu_art_s"
-        add "menu_particles"
-        if persistent.playthrough != 4:
-            add "menu_art_m"
-        add "menu_fade"
+        vbox xalign 0.5 yalign 0.9:
+            xsize 440
+            spacing 10
 
-    if gui.show_name:
+            label _("- - - - MENU - - - -") xalign 0.5:
+                text_size 36
 
-        vbox:
-            text "[config.name!t]":
-                style "main_menu_title"
+            null height 30
 
-            text "[config.version]":
-                style "main_menu_version"
+            use navigation
+
+            null height 20
+
+            add Solid("#fff") ysize 2
+
+            null
+
+            text _("▲ ▼") xalign 0.0 size 28
+
+        # add "menu_bg"
+        # add "menu_art_y"
+        # add "menu_art_n"
+        # frame:
+        #     pass
+
+        # ## The use statement includes another screen inside this one. The actual
+        # ## contents of the main menu are in the navigation screen.
+        # use navigation
+
+        # add "menu_particles"
+        # add "menu_particles"
+        # add "menu_particles"
+        # add "menu_logo"
+
+        # add "menu_art_s"
+        # add "menu_particles"
+        # add "menu_art_m"
+
+        # add "menu_fade"
+
+        # if gui.show_name:
+
+        #     vbox:
+        #         text "[config.name!t]":
+        #             style "main_menu_title"
+
+        #         text "[config.version]":
+        #             style "main_menu_version"
 
     key "K_ESCAPE" action Quit(confirm=False)
 
@@ -581,12 +582,9 @@ style main_menu_frame:
 
     background "menu_nav"
 
-style main_menu_vbox:
-    xalign 1.0
-    xoffset -20
-    xmaximum 800
-    yalign 1.0
-    yoffset -20
+style main_menu_label_text:
+    color "#fff"
+    kerning 1
 
 style main_menu_text:
     xalign 1.0
@@ -624,50 +622,49 @@ screen game_menu(title, scroll=None):
 
     style_prefix "game_menu"
 
-    frame:
-        style "game_menu_outer_frame"
+    fixed at old_tv:
+        frame:
+            style "game_menu_outer_frame"
 
-        hbox:
+            hbox:
 
-            # Reserve space for the navigation section.
-            frame:
-                style "game_menu_navigation_frame"
+                frame:
+                    style "game_menu_content_frame"
 
-            frame:
-                style "game_menu_content_frame"
+                    if scroll == "viewport":
 
-                if scroll == "viewport":
+                        viewport:
+                            scrollbars "vertical"
+                            mousewheel True
+                            draggable True
+                            yinitial 1.0
 
-                    viewport:
-                        scrollbars "vertical"
-                        mousewheel True
-                        draggable True
-                        yinitial 1.0
+                            side_yfill True
 
-                        side_yfill True
+                            vbox:
+                                transclude
 
-                        vbox:
+                    elif scroll == "vpgrid":
+
+                        vpgrid:
+                            cols 1
+                            yinitial 1.0
+
+                            scrollbars "vertical"
+                            mousewheel True
+                            draggable True
+
+                            side_yfill True
+
                             transclude
 
-                elif scroll == "vpgrid":
-
-                    vpgrid:
-                        cols 1
-                        yinitial 1.0
-
-                        scrollbars "vertical"
-                        mousewheel True
-                        draggable True
-
-                        side_yfill True
+                    else:
 
                         transclude
 
-                else:
+        # use navigation
 
-                    transclude
-
-    use navigation
+        label ("---- %s ----" % title)
 
     if not main_menu and persistent.playthrough == 2 and not persistent.menu_bg_m and renpy.random.randint(0, 49) == 0:
         on "show" action Show("game_menu_m")
@@ -676,8 +673,6 @@ screen game_menu(title, scroll=None):
         style "return_button"
 
         action Return()
-
-    label title
 
     if main_menu:
         key "game_menu" action ShowMenu("main_menu")
@@ -700,15 +695,13 @@ style game_menu_outer_frame:
     bottom_padding 30
     top_padding 120
 
-    background "gui/overlay/game_menu.png"
-
 style game_menu_navigation_frame:
     xsize 280
     yfill True
 
 style game_menu_content_frame:
     left_margin 40
-    right_margin 20
+    right_margin 40
     top_margin 10
 
 style game_menu_viewport:
@@ -721,15 +714,13 @@ style game_menu_side:
     spacing 10
 
 style game_menu_label:
-    xpos 50
+    xalign 0.5
     ysize 120
 
 style game_menu_label_text:
-    font "gui/font/RifficFree-Bold.ttf"
+    font gui.interface_font
     size gui.title_text_size
     color "#fff"
-    outlines [(6, text_outline_color, 0, 0), (3, text_outline_color, 2, 2)]
-    #outlines [(6, "#b59", 0, 0), (3, "#b59", 2, 2)]
     yalign 0.5
 
 style return_button:
@@ -903,7 +894,7 @@ style page_label:
     ypadding 3
 
 style page_label_text:
-    color "#000"
+    color "#fff"
     outlines []
     text_align 0.5
     layout "subtitle"
@@ -911,10 +902,12 @@ style page_label_text:
 
 style page_button:
     properties gui.button_properties("page_button")
+    hover_background "#fff"
 
 style page_button_text:
     properties gui.button_text_properties("page_button")
     outlines []
+    hover_color "#00f"
 
 style slot_button:
     properties gui.button_properties("slot_button")
@@ -1063,10 +1056,9 @@ style pref_label:
     bottom_margin 2
 
 style pref_label_text:
-    font "gui/font/RifficFree-Bold.ttf"
+    font gui.interface_font
     size 24
     color "#fff"
-    outlines [(3, "#b59", 0, 0), (1, "#b59", 1, 1)]
     yalign 1.0
 
 style pref_vbox:
@@ -1081,7 +1073,7 @@ style radio_button:
 
 style radio_button_text:
     properties gui.button_text_properties("radio_button")
-    font "gui/font/Halogen.ttf"
+    font gui.interface_font
     outlines []
 
 style check_vbox:
@@ -1093,7 +1085,7 @@ style check_button:
 
 style check_button_text:
     properties gui.button_text_properties("check_button")
-    font "gui/font/Halogen.ttf"
+    font gui.interface_font
     outlines []
 
 style slider_slider:

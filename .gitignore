@@ -1,19 +1,44 @@
-game/cache
-game/saves
+# Don't track content of these folders #
+########################################
+cache/
+saves/
+to-**/
 
-**.rpyc
-**.rpa
 
-lib
-renpy
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+**.app
+**.app/**
+*.o
+*.so
 
-COPYRIGHT.txt
-DDLC.exe
-DDLC.sh
-DDLC.py
+*.rpyc
+*.rpymc
+*.bak
 
+
+# The log file and other misc things #
+######################################
 log.txt
-traceback.txt
 errors.txt
+traceback.txt
+files.txt
+project.json
 
-README.html
+
+# Base DDLC assets #
+####################
+*.rpa
+firstrun
+
+# Generally ignored files #
+###########################
+.DS_Store
+desktop.ini
+
+# Tools #
+game/**.py

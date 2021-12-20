@@ -28,7 +28,7 @@ define -2 gui.idle_color = '#aaaaaa'
 define -2 gui.idle_small_color = '#333'
 
 ## The color that is used for buttons and bars that are hovered.
-define -2 gui.hover_color = '#cc6699'
+define -2 gui.hover_color = '#fff'
 
 ## The color used for a text button when it is selected but not focused.
 define -2 gui.selected_color = '#bb5588'
@@ -54,7 +54,7 @@ define -2 gui.default_font = "gui/font/Aller_Rg.ttf"
 define -2 gui.name_font = "gui/font/RifficFree-Bold.ttf"
 
 ## The font used for out-of-game text.
-define -2 gui.interface_font = "gui/font/Aller_Rg.ttf"
+define -2 gui.interface_font = "mod_assets/gui/font/VCR_OSD_MONO_1.001.ttf"
 
 ## The size of normal dialogue text.
 define -2 gui.text_size = 24
@@ -72,15 +72,15 @@ define -2 gui.label_text_size = 28
 define -2 gui.notify_text_size = 16
 
 ## The size of the game's title.
-define -2 gui.title_text_size = 38
+define -2 gui.title_text_size = 36
 
 # Main Menu and Game Menu
 
 # Sets the background for the Start Menu
-define -2 gui.main_menu_background = "menu_bg"
+define -2 gui.main_menu_background = "#00f"
 
 # Sets the background for the Pause Menu
-define -2 gui.game_menu_background = "game_menu_bg"
+define -2 gui.game_menu_background = "#00f"
 
 # Controls whether we show the name and version of the game
 define -2 gui.show_name = False
@@ -215,7 +215,7 @@ define gui.slot_button_height = 206
 define gui.slot_button_borders = Borders(10, 10, 10, 10)
 define gui.slot_button_text_size = 14
 define gui.slot_button_text_xalign = 0.5
-define gui.slot_button_text_idle_color = gui.idle_small_color
+define gui.slot_button_text_idle_color = gui.idle_color
 define gui.slot_button_text_hover_color = gui.hover_color
 
 ## The width and height of thumbnails used by the save slots.

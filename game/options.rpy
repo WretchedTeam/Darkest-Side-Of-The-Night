@@ -4,7 +4,7 @@
    
 # This is where you will name your mod!
 # Change "DDLC Mod Template 2.0" to your mod name (e.g. "Yuri")
-define config.name = "DDLC Mod Template"
+define config.name = "Darkest Side Of The Night"
 
 # This controls whether you want your mod name to show in the main menu.
 # If your mod name is big, it is suggested to turn this off
@@ -13,7 +13,7 @@ define gui.show_name = True
 # This is where you will input the version of your mod.
 # If you have multiple versions of your mod, this will be pretty useful to change.
 # If you are starting out, set this to "1.0"
-define config.version = "2.4.5"
+define config.version = "1.0"
 
 # This adds information about your mod in the About section.
 # DDLC does not have a about section so you can leave this blank.
@@ -22,7 +22,7 @@ define gui.about = _("")
 # This is the name of your build that the Ren'Py SDK will read.
 # The build name is ASCII only so no numbers, spaces, or semicolons.
 # Example: Doki Doki Yuri Time to DokiDokiYuriTime
-define build.name = "DDLCModTemplateTwo"
+define build.name = "DarkestSideOfTheNight"
 
 # This configures whether your mod has sound effects (e.g. slap sound effects) or not.
 # It is best to leave this set to True default.
@@ -124,11 +124,6 @@ define config.gl_test_image = "white"
 init python:
     if len(renpy.loadsave.location.locations) > 1: del(renpy.loadsave.location.locations[1])
     renpy.game.preferences.pad_enabled = False
-    def replace_text(s):
-        s = s.replace('--', u'\u2014') 
-        s = s.replace(' - ', u'\u2014') 
-        return s
-    config.replace_text = replace_text
 
     def game_menu_check():
         if quick_menu: renpy.call_in_new_context('_game_menu')

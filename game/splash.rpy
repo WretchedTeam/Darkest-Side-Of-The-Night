@@ -22,6 +22,7 @@ init python:
     ]
 
 image splash_warning = ParameterizedText(style="splash_text", xalign=0.5, yalign=0.5)
+image splash_nosignal = ParameterizedText(style="splash_text", xalign=0.5, yalign=0.5, size=48)
 
 # Main Menu Images
 image menu_logo:
@@ -188,14 +189,7 @@ transform menu_art_move(z, x, z2):
 
 # Team Salvato Splash Screen
 
-image intro:
-    truecenter
-    "white"
-    0.5
-    "bg/splash.png" with Dissolve(0.5, alpha=True)
-    2.5
-    "white" with Dissolve(0.5, alpha=True)
-    0.5
+image intro = "mod_assets/bg/splash.png"
 
 # Special Mod Message Text
 
@@ -207,49 +201,6 @@ image warning:
     "white" with Dissolve(0.5, alpha=True)
     0.5
 
-# Checks for missing character files
-## Note: For Android, make sure to change the default package name of to 
-## your own package name in options.rpy under define package_name. 
-##Your package name is what you defined in Ren'Py Launcher in the Android section
-init python:
-    if not persistent.do_not_delete:
-        import os
-        if renpy.android: #checks if the platform is android
-            try:
-                # writes character files if missing and correct playthrough to Android/data/[your mod]/characters
-                if not os.access(os.environ['ANDROID_PUBLIC'] + "/characters/", os.F_OK):
-                    os.mkdir(os.environ['ANDROID_PUBLIC'] + "/characters")
-                if persistent.playthrough <= 2:
-                    try: renpy.file(os.environ['ANDROID_PUBLIC'] + "/characters/monika.chr")
-                    except: open(os.environ['ANDROID_PUBLIC'] +  "/characters/monika.chr", "wb").write(renpy.file("monika.chr").read())
-                if persistent.playthrough <= 1 or persistent.playthrough == 4:
-                    try: renpy.file(os.environ['ANDROID_PUBLIC'] + "/characters/natsuki.chr")
-                    except: open(os.environ['ANDROID_PUBLIC'] + "/characters/natsuki.chr", "wb").write(renpy.file("natsuki.chr").read())
-                    try: renpy.file(os.environ['ANDROID_PUBLIC'] + "/characters/yuri.chr")
-                    except: open(os.environ['ANDROID_PUBLIC'] + "/characters/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
-                if persistent.playthrough == 0 or persistent.playthrough == 4:
-                    try: renpy.file(os.environ['ANDROID_PUBLIC'] + "/characters/sayori.chr")
-                    except: open(os.environ['ANDROID_PUBLIC'] + "/characters/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
-            except:
-                pass
-        else:
-            try:
-                if not os.access(config.basedir + "/characters/", os.F_OK):
-                    os.mkdir(config.basedir + "/characters")
-                if persistent.playthrough <= 2:
-                    try: renpy.file("../characters/monika.chr")
-                    except: open(config.basedir + "/characters/monika.chr", "wb").write(renpy.file("monika.chr").read())
-                if persistent.playthrough <= 1 or persistent.playthrough == 4:
-                    try: renpy.file("../characters/natsuki.chr")
-                    except: open(config.basedir + "/characters/natsuki.chr", "wb").write(renpy.file("natsuki.chr").read())
-                    try: renpy.file("../characters/yuri.chr")
-                    except: open(config.basedir + "/characters/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
-                if persistent.playthrough == 0 or persistent.playthrough == 4:
-                    try: renpy.file("../characters/sayori.chr")
-                    except: open(config.basedir + "/characters/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
-            except:
-                pass
-
 # Startup Disclaimer Images
 image tos = "bg/warning.png"
 image tos2 = "bg/warning2.png"
@@ -257,51 +208,7 @@ image tos2 = "bg/warning2.png"
 # Startup Disclaimer
 
 label splashscreen:
-    # Grabs current username of the PC on Windows
-    python:
-        process_list = []
-        currentuser = ""
-        if renpy.windows:
-            try:
-                process_list = subprocess.check_output("wmic process get Description", shell=True).lower().replace("\r", "").replace(" ", "").split("\n")
-            except:
-                pass
-            try:
-                for name in ('LOGNAME', 'USER', 'LNAME', 'USERNAME'):
-                    user = os.environ.get(name)
-                    if user:
-                        currentuser = user
-            except:
-                pass
-
-
-    python:
-        firstrun = ""
-
-    if not firstrun:
-        if persistent.first_run and (config.version == persistent.oldversion or persistent.autoload == "postcredits_loop"):
-            $ quick_menu = False
-            scene black
-            menu:
-                "A previous save file has been found. Would you like to delete your save data and start over?"
-                "Yes, delete my existing data.":
-                    "Deleting save data...{nw}"
-                    python:
-                        delete_all_saves()
-                        renpy.loadsave.location.unlink_persistent()
-                        renpy.persistent.should_save_persistent = False
-                        renpy.utter_restart()
-                "No, continue where I left off.":
-                    $ restore_relevant_characters()
-
-        #python:
-            #if not firstrun:
-                #try:
-                    #with open(config.basedir + "/game/firstrun", "w") as f:
-                        #f.write("1")
-                #filepath = renpy.file("firstrun").name
-                #open(filepath, "a").close()
-
+    show layer master at old_tv
     # Sets First Run to False to Show Disclaimer
     default persistent.first_run = False
 
@@ -324,7 +231,7 @@ label splashscreen:
         menu:
             "By playing [config.name] you agree that you have completed Doki Doki Literature Club and accept any spoilers contained within."
             "I agree.":
-                 pass
+                pass
         $ persistent.first_run = True
         scene tos2
         with Dissolve(1.5)
@@ -332,37 +239,6 @@ label splashscreen:
         scene white
 
         $ persistent.first_run = True
-
-    ## Controls where Sayori Kill Early Starts Up.
-    ## Commented out for mod safety reasons.
-    # python:
-    #     s_kill_early = None
-    #     if persistent.playthrough == 0:
-    #         try: renpy.file("../characters/sayori.chr")
-    #         except: s_kill_early = True
-    #     if not s_kill_early:
-    #         if persistent.playthrough <= 2 and persistent.playthrough != 0:
-    #             try: renpy.file("../characters/monika.chr")
-    #             except: open(config.basedir + "/characters/monika.chr", "wb").write(renpy.file("monika.chr").read())
-    #         if persistent.playthrough <= 1 or persistent.playthrough == 4:
-    #             try: renpy.file("../characters/natsuki.chr")
-    #             except: open(config.basedir + "/characters/natsuki.chr", "wb").write(renpy.file("natsuki.chr").read())
-    #             try: renpy.file("../characters/yuri.chr")
-    #             except: open(config.basedir + "/characters/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
-    #         if persistent.playthrough == 4:
-    #             try: renpy.file("../characters/sayori.chr")
-    #             except: open(config.basedir + "/characters/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
-
-
-    # Controls Special Poems at random on startup
-    if not persistent.special_poems:
-        python hide:
-            persistent.special_poems = [0,0,0]
-            a = range(1,12)
-            for i in range(3):
-                b = renpy.random.choice(a)
-                persistent.special_poems[i] = b
-                a.remove(b)
 
     $ basedir = config.basedir.replace('\\', '/')
 
@@ -372,91 +248,46 @@ label splashscreen:
 
     # Team Salvato/Splash Message
 
-    $ config.allow_skipping = False
-
-    ## Shows the ghost menu if the user is lucky to roll it
-    if persistent.playthrough == 2 and not persistent.seen_ghost_menu and renpy.random.randint(0, 63) == 0:
-        show black
-        $ config.main_menu_music = audio.ghostmenu
-        $ persistent.seen_ghost_menu = True
-        $ persistent.ghost_menu = True
-        $ renpy.music.play(config.main_menu_music)
-        $ pause(1.0)
-        show end with dissolve_cg
-        $ pause(3.0)
-        $ config.allow_skipping = True
-        return
-
-    ## Commented out for mod safety reasons.
-    ## Sayori Early Death Easter Egg
-    # if s_kill_early:
-    #     show black
-    #     play music "bgm/s_kill_early.ogg"
-    #     $ pause(1.0)
-    #     show end with dissolve_cg
-    #     $ pause(3.0)
-    #     scene white
-    #     show expression "images/cg/s_kill_early.png":
-    #         yalign -0.05
-    #         xalign 0.25
-    #         dizzy(1.0, 4.0, subpixel=False)
-    #     show white as w2:
-    #         choice:
-    #             ease 0.25 alpha 0.1
-    #         choice:
-    #             ease 0.25 alpha 0.125
-    #         choice:
-    #             ease 0.25 alpha 0.15
-    #         choice:
-    #             ease 0.25 alpha 0.175
-    #         choice:
-    #             ease 0.25 alpha 0.2
-    #         choice:
-    #             ease 0.25 alpha 0.225
-    #         choice:
-    #             ease 0.25 alpha 0.25
-    #         choice:
-    #             ease 0.25 alpha 0.275
-    #         choice:
-    #             ease 0.25 alpha 0.3
-    #         pass
-    #         choice:
-    #             pass
-    #         choice:
-    #             0.25
-    #         choice:
-    #             0.5
-    #         choice:
-    #             0.75
-    #         repeat
-    #     show noise:
-    #         alpha 0.1
-    #     with Dissolve(1.0)
-    #     show expression Text("Now everyone can be happy.", style="sayori_text"):
-    #         xalign 0.8
-    #         yalign 0.5
-    #         alpha 0.0
-    #         600
-    #         linear 60 alpha 0.5
-    #     pause
-    #     $ renpy.quit()
-
-    show white
-    $ persistent.ghost_menu = False
-    $ splash_message = splash_message_default
-    $ config.main_menu_music = audio.t1
-    $ renpy.music.play(config.main_menu_music)
     $ starttime = datetime.datetime.now()
-    show intro with Dissolve(0.5, alpha=True)
-    $ pause(3.0 - (datetime.datetime.now() - starttime).total_seconds())
-    hide intro with Dissolve(max(0, 3.5 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
-    if persistent.playthrough == 2 and renpy.random.randint(0, 3) == 0:
-        $ splash_message = renpy.random.choice(splash_messages)
-    show splash_warning "[splash_message]" with Dissolve(max(0, 4.0 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
-    $ pause(6.0 - (datetime.datetime.now() - starttime).total_seconds())
-    hide splash_warning with Dissolve(max(0, 6.5 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
-    $ pause(6.5 - (datetime.datetime.now() - starttime).total_seconds())
-    $ config.allow_skipping = True
+
+    show expression "#00f"
+
+    python hide:
+        config.allow_skipping = False
+        # config.main_menu_music = audio.t1
+        # renpy.music.play(config.main_menu_music)
+
+    show screen vhs_overlay()
+    show splash_nosignal "NO SIGNAL"
+    play sound [ "<silence 1.0>", "mod_assets/sfx/insert-cassette.ogg" ]
+
+    pause 5.5
+
+    play audio "mod_assets/sfx/vhs-interference.ogg" volume 3.0
+
+    hide splash_nosignal
+    pause 0.5
+
+    show intro at Transform(matrixcolor=SaturationMatrix(0.4))
+
+    pause 2.5
+
+    hide intro
+    pause 1.5
+
+    show splash_warning "[splash_message_default]"
+
+    pause 0.5
+    pause 2.0
+
+    hide splash_warning
+    # with Dissolve(0.5, alpha=True)
+    pause 1.5
+
+    python hide:
+        renpy.pause(6.5 - (datetime.datetime.now() - starttime).total_seconds())
+        config.allow_skipping = True
+
     return
 
 # Warning Screen
@@ -498,7 +329,6 @@ label after_load:
     $ config.allow_skipping = allow_skipping
     $ _dismiss_pause = config.developer
     $ persistent.ghost_menu = False
-    $ style.say_dialogue = style.normal
 
     if anticheat != persistent.anticheat:
         stop music
