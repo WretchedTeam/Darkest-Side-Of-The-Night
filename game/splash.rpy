@@ -254,8 +254,6 @@ label splashscreen:
 
     python hide:
         config.allow_skipping = False
-        # config.main_menu_music = audio.t1
-        # renpy.music.play(config.main_menu_music)
 
     show screen vhs_overlay()
     show splash_nosignal "NO SIGNAL"
@@ -263,7 +261,11 @@ label splashscreen:
 
     pause 5.5
 
-    play audio "mod_assets/sfx/vhs-interference.ogg" volume 3.0
+    python:
+        config.main_menu_music = audio.vhs_noise
+        renpy.music.play(config.main_menu_music)
+
+    # play audio "mod_assets/sfx/vhs-interference.ogg" volume 3.0
 
     hide splash_nosignal
     pause 0.5
@@ -360,7 +362,7 @@ label autoload:
 
 # starts the menu music once started
 label before_main_menu:
-    $ config.main_menu_music = audio.t1
+    $ config.main_menu_music = audio.vhs_noise
     return
 
 # Basic Quit.

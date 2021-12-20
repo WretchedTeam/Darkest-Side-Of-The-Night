@@ -168,9 +168,13 @@ define gui.button_text_xalign = 0.0
 ##
 ## These customizations are used by the default interface:
 
-define gui.radio_button_borders = Borders(28, 4, 4, 4)
+define gui.radio_button_text_idle_color = "#fff"
+define gui.radio_button_text_hover_color = "#00f"
+define gui.radio_button_text_selected_color = "#00f"
 
-define gui.check_button_borders = Borders(28, 4, 4, 4)
+define gui.check_button_text_idle_color = "#fff"
+define gui.check_button_text_hover_color = "#00f"
+define gui.check_button_text_selected_color = "#00f"
 
 define gui.confirm_button_text_xalign = 0.5
 

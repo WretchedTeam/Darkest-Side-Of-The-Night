@@ -427,7 +427,7 @@ init python:
         def get_sensitive(self):
             return self.slot is not None
 
-screen navigation():
+screen navigation(ret=Return()):
 
     vbox:
         style_prefix "navigation"
@@ -437,30 +437,26 @@ screen navigation():
 
         if not persistent.autoload or not main_menu:
 
-            textbutton _("CONTINUE") action LoadMostRecent()
-
             if main_menu:
+                textbutton _("CONTINUE") action LoadMostRecent()
                 textbutton _("NEW GAME") action If(persistent.playername, true=Start(), false=Show(screen="name_input", message="Please enter your name", ok_action=Function(FinishEnterName)))
 
             else:
+                textbutton _("CONTINUE") action Return()
+                textbutton _("HISTORY") action [ShowMenu("history", ret), SensitiveIf(renpy.get_screen("history") == None)]
 
-                textbutton _("History") action [ShowMenu("history"), SensitiveIf(renpy.get_screen("history") == None)]
+                textbutton _("SAVE GAME") action [ShowMenu("save", ret), SensitiveIf(renpy.get_screen("save") == None)]
 
-                textbutton _("Save Game") action [ShowMenu("save"), SensitiveIf(renpy.get_screen("save") == None)]
-
-            textbutton _("LOAD GAME") action [ShowMenu("load"), SensitiveIf(renpy.get_screen("load") == None)]
+            textbutton _("LOAD GAME") action [ShowMenu("load", ret), SensitiveIf(renpy.get_screen("load") == None)]
 
             if _in_replay:
 
                 textbutton _("End Replay") action EndReplay(confirm=True)
 
             elif not main_menu:
-                if persistent.playthrough != 3:
-                    textbutton _("Main Menu") action MainMenu()
-                else:
-                    textbutton _("Main Menu") action NullAction()
+                textbutton _("MAIN MENU") action MainMenu()
 
-            textbutton _("SETTINGS") action [ShowMenu("preferences"), SensitiveIf(renpy.get_screen("preferences") == None)]
+            textbutton _("SETTINGS") action [ShowMenu("preferences", ret), SensitiveIf(renpy.get_screen("preferences") == None)]
 
             #textbutton _("About") action ShowMenu("about")
 
@@ -471,9 +467,6 @@ screen navigation():
 
                 ## The quit button is banned on iOS and unnecessary on Android.
                 textbutton _("QUIT") action Quit(confirm=not main_menu)
-        else:
-            timer 1.75 action Start("autoload_yurikill")
-
 
 style navigation_button is gui_button
 style navigation_button_text is gui_button_text
@@ -611,13 +604,13 @@ screen game_menu_m():
     add "gui/menu_bg_m.png"
     timer 0.3 action Hide("game_menu_m")
 
-screen game_menu(title, scroll=None):
+screen game_menu(title, scroll=None, ret=Return()):
 
     # Add the backgrounds.
     if main_menu:
         add gui.main_menu_background
     else:
-        key "mouseup_3" action Return()
+        key "mouseup_3" action ret
         add gui.game_menu_background
 
     style_prefix "game_menu"
@@ -666,17 +659,18 @@ screen game_menu(title, scroll=None):
 
         label ("---- %s ----" % title)
 
-    if not main_menu and persistent.playthrough == 2 and not persistent.menu_bg_m and renpy.random.randint(0, 49) == 0:
-        on "show" action Show("game_menu_m")
+        use vhs_overlay("PAUSED")
 
-    textbutton _("Return"):
-        style "return_button"
+        if ret:
+            textbutton _("Return"):
+                style "return_button"
 
-        action Return()
+                action ret
 
     if main_menu:
         key "game_menu" action ShowMenu("main_menu")
-
+    else:
+        key "game_menu" action ret
 
 style game_menu_outer_frame is empty
 style game_menu_navigation_frame is empty
@@ -780,18 +774,18 @@ style about_label_text:
 ## https://www.renpy.org/doc/html/screen_special.html#save
 ## https://www.renpy.org/doc/html/screen_special.html#load
 
-screen save():
+screen save(ret=Return()):
 
     tag menu
 
-    use file_slots(_("Save"))
+    use file_slots(_("SAVE"), ret)
 
 
-screen load():
+screen load(ret=Return()):
 
     tag menu
 
-    use file_slots(_("Load"))
+    use file_slots(_("LOAD"), ret)
 
 init python:
     def FileActionMod(name, page=None, **kwargs):
@@ -804,11 +798,11 @@ init python:
             return FileAction(name)
 
 
-screen file_slots(title):
+screen file_slots(title, ret=Return()):
 
     default page_name_value = FilePageNameInputValue()
 
-    use game_menu(title):
+    use game_menu(title, ret=ret):
 
         fixed:
 
@@ -927,7 +921,7 @@ style slot_button_text:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#preferences
 
-screen preferences():
+screen preferences(ret=Return()):
 
     tag menu
 
@@ -936,10 +930,10 @@ screen preferences():
     else:
         $ cols = 4
 
-    use game_menu(_("Settings"), scroll="viewport"):
+    use game_menu(_("SETTINGS"), scroll="viewport", ret=ret):
 
         vbox:
-            xoffset 50
+            xoffset 150
 
             hbox:
                 box_wrap True
@@ -1069,7 +1063,8 @@ style radio_vbox:
 
 style radio_button:
     properties gui.button_properties("radio_button")
-    foreground "gui/button/check_[prefix_]foreground.png"
+    hover_background "#fff"
+    selected_background "#fff"
 
 style radio_button_text:
     properties gui.button_text_properties("radio_button")
@@ -1081,7 +1076,8 @@ style check_vbox:
 
 style check_button:
     properties gui.button_properties("check_button")
-    foreground "gui/button/check_[prefix_]foreground.png"
+    hover_background "#fff"
+    selected_background "#fff"
 
 style check_button_text:
     properties gui.button_text_properties("check_button")
@@ -1111,11 +1107,11 @@ style slider_vbox:
 ##
 ## https://www.renpy.org/doc/html/history.html
 
-screen history():
+screen history(ret=Return()):
     tag menu
     predict False
 
-    use game_menu(_("History"), scroll=("vpgrid" if gui.history_height else "viewport")):
+    use game_menu(_("HISTORY"), scroll=("vpgrid" if gui.history_height else "viewport"), ret=ret):
         style_prefix "history"
         for h in _history_list:
             window:
@@ -1718,3 +1714,18 @@ style nvl_button:
 style nvl_button_text:
     properties gui.button_text_properties("nvl_button")
 
+screen pause_menu():
+    style_prefix "pause_menu"
+    tag menu
+
+    fixed at old_tv:
+        add gui.game_menu_background
+
+        use vhs_overlay("PAUSED")
+
+        vbox xfill True yalign 0.5:
+            label _("---- PAUSE ----")
+            use navigation(ShowMenu("pause_menu"))
+
+style pause_menu_label is game_menu_label
+style pause_menu_label_text is game_menu_label_text

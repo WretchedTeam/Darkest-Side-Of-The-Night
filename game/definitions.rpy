@@ -148,6 +148,8 @@ define audio.closet_close = "sfx/closet-close.ogg"
 define audio.page_turn = "sfx/pageflip.ogg"
 define audio.fall = "sfx/fall.ogg"
 
+define audio.vhs_noise = "mod_assets/sfx/vhs-interference.ogg"
+
 # Backgrounds
 # To define a new color background do like so
 # image blue = "#XXXXXX" where X is your hex digits (#158353)

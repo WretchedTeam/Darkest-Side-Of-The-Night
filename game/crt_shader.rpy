@@ -1,6 +1,6 @@
 define config.gl2 = True
 
-screen vhs_overlay(t="►PLAY"):
+screen vhs_overlay(t="PLAY"):
     style_prefix "vhs_overlay"
 
     vbox spacing 2 at old_tv:
@@ -162,7 +162,7 @@ init python:
 
         vec3 yuv2rgb(vec3 yuv)
         {
-            return vec3(yuv.r + 1.140 * yuv.b, yuv.r - 0.395*yuv.g - 0.581*yuv.b, yuv.r + 2.032*yuv.g);
+            return vec3(yuv.r + 1.140 * yuv.b, yuv.r - 0.395 * yuv.g - 0.581 * yuv.b, yuv.r + 2.032 * yuv.g);
         }
     """, fragment_300="""
         int color_res = int((sin(u_time + (v_tex_coord.y * res0.y) / 10.0) + 1.1) * color_resX + bias);

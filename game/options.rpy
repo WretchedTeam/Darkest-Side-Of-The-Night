@@ -39,14 +39,14 @@ define config.has_voice = False
 # This configures what song/music will play when you launch your mod.
 # audio.t1 is the Doki Doki Literature Club Main Menu Music.
 # If you want to change this, change the "t1" to the song you want.
-define config.main_menu_music = audio.t1
+define config.main_menu_music = audio.vhs_noise
 
 # These two settings control the transition effects of DDLC on the game menu.
 # Dissolve(.2) sets the transition effect you see.
 # config.enter_transition controls the effect seen when entering the game menu.
 # config.exit_transition controls the effect when returning to the game.
-define config.enter_transition = Dissolve(.2)
-define config.exit_transition = Dissolve(.2)
+define config.enter_transition = None
+define config.exit_transition = None
 
 # This controls the transition effect of DDLC when loading a saved game.
 # By default, this is set to None and you can customize what transition you want to show.
@@ -126,7 +126,7 @@ init python:
     renpy.game.preferences.pad_enabled = False
 
     def game_menu_check():
-        if quick_menu: renpy.call_in_new_context('_game_menu')
+        if quick_menu: renpy.call_in_new_context('_game_menu', _game_menu_screen="pause_menu")
 
     config.game_menu_action = game_menu_check
 
@@ -135,6 +135,10 @@ init python:
             return (width, float(width) / (float(config.screen_width) / float(config.screen_height)))
         else:
             return (float(height) * (float(config.screen_width) / float(config.screen_height)), height)
+
+    config.adjust_view_size = force_integer_multiplier
+
+define -2 _game_menu_screen = "pause_menu"
 
 ## Build configuration #########################################################
 ##
