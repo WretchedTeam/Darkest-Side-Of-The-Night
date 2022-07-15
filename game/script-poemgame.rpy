@@ -25,7 +25,7 @@ init python: #This whole block runs when DDLC is started (as opposed to when the
 
     # Building the word list
     full_wordlist = []
-    with renpy.file("poemwords.txt") as wordfile:
+    with renpy.open_file("poemwords.txt", "utf-8") as wordfile:
         for line in wordfile:
             # Ignore lines beginning with '#' and empty lines
             line = line.strip()

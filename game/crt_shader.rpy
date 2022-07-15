@@ -197,5 +197,5 @@ init python:
 transform old_tv:
     mesh True
     shader [ "dsotn.vhs" ]
-    pause 0.0
+    pause 0.01
     repeat
